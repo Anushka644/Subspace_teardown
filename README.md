@@ -1,6 +1,6 @@
 # Subspace — what I found, and what I'd fix first
 
-*A product teardown by [Your name]. I used the app and the web app as a normal customer for a few days before writing any of this. Everything below is something I actually ran into. Screenshots sit alongside each point, and there's a small interactive model in `/models`.*
+*A product teardown by Anushka Tripathi. I used the app and the web app as a normal customer for a few days before writing any of this. Everything below is something I actually ran into. Screenshots sit alongside each point, and there's a small interactive model in `/models`.*
 
 ---
 
@@ -50,11 +50,11 @@ I sequenced them by where they hit in the funnel, not by how annoying they are t
 
 **Observed.** The Quick Payments box renders the raw text `quickPayments.noOptions` — a code string that was never replaced with real copy.
 
-![quickPayments.noOptions rendered live](screenshots/quickpayments-nooptions.png)
+<img src="screenshots/quickpayments-nooptions.png" width="200" alt="quickPayments.noOptions rendered live">
 
 A category called "KodeKloud on Rent" is sitting in the live app next to "Monthly Yoga Classes" and "Herbal Tea Subscription," both with broken image placeholders and both "Rent for 1 day."
 
-![KodeKloud test data live in the app](screenshots/kodekloud-test-data.png)
+<img src="screenshots/kodekloud-test-data.png" width="200" alt="KodeKloud test data live in the app">
 
 And it keeps going. A gift card is labelled "₹1000 / month." My profile defaults to the name "User" with username "Not set." The footer says "© 2024." This is mid-2026. (See `screenshots/giftcard-1000-month.png`, `profile-not-set.png`, `copyright-2024.png`.)
 
@@ -67,7 +67,7 @@ And it keeps going. A gift card is labelled "₹1000 / month." My profile defaul
 
 **Observed.** You don't have to log in to look around. You land straight in Explore and can browse deals, brands, and subscriptions freely. Login only gets asked for when you tap Wallet or Home. I actually liked this a lot at first — let people see the goods, then ask them to sign up once they're interested.
 
-![Explore leads with commodity gift cards and brand discounts](screenshots/explore-commodity-brands.png)
+<img src="screenshots/explore-commodity-brands.png" width="200" alt="Explore leads with commodity gift cards and brand discounts">
 
 **Problem.** Here's where I changed my mind, and I think this is the more useful read. Letting people browse before signing up is the right call. But *what* they get to browse for free is the most generic part of the whole product — gift cards at one to six percent off, which Amazon, CRED, Park+ and a dozen others also do. The genuinely different stuff, the reasons this product exists — tracking your own subscriptions, splitting them with a group, the wallet — all of that needs your data, so it's locked behind the login wall. So the free preview is the part of Subspace with the least pull, and the sticky part stays invisible until after the thing I'm trying to get past. The pattern is right. The payload is backwards.
 
@@ -78,7 +78,7 @@ And it keeps going. A gift card is labelled "₹1000 / month." My profile defaul
 
 **Observed.** Under Public Groups, you can join a group of strangers to share a subscription — "Netflix Standard Plan, ₹250/device," "split 3 ways," "21+ groups" for YouTube Premium. The pricing is per-device, and the whole model is built on pooling one account across several unrelated people.
 
-![Public Groups: split 3 ways, per device, 21+ groups](screenshots/public-groups-split.png)
+<img src="screenshots/public-groups-split.png" width="200" alt="Public Groups: split 3 ways, per device, 21+ groups">
 
 **Problem.** That's account sharing, and the platforms it depends on have spent the last couple of years shutting it down. Netflix went after password sharing hard and it worked for them. The cheapest, most eye-catching part of Subspace's pitch sits on top of other companies' terms of service, and those companies have both the motive and the proven ability to break it. If the shared-account model gets squeezed, the headline discounts go with it. This isn't a UI problem you can design around; it's a question about whether the core value prop is standing on solid ground.
 
@@ -89,7 +89,7 @@ And it keeps going. A gift card is labelled "₹1000 / month." My profile defaul
 
 **Observed.** The app runs its own wallet — add money, withdraw, send, locked and unlocked balances — and pushes its own KYC ("Know Your Customer") flow. On the supply side, there's a "Sell Products — manage and list your vendor products" surface, and the gift-card catalogue is stitched together brand by brand (Amazon, Zomato, Decathlon, Myntra and so on).
 
-![Wallet with locked/unlocked balances and KYC push](screenshots/wallet-kyc.png)
+<img src="screenshots/wallet-kyc.png" width="200" alt="Wallet with locked/unlocked balances and KYC push">
 
 **Problem.** Both of those are heavy things to own. A stored-value wallet with KYC drags you into prepaid-instrument and RBI territory, which is a lot of compliance weight for a team this size to carry alone. And aggregating brands one at a time is slow. These are exactly the kinds of capability that are usually better rented than built, especially early.
 
