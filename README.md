@@ -20,7 +20,7 @@ It's a **marketplace** (buy gift cards and OTT subscriptions at a small discount
 
 The trouble is they're all wearing the same skin — and the skin is a quick-commerce one. The home screen says "Delivery in 11 minutes." There's a "search delivery location" box. The footer has a "Shipping Policy." There's a section called "Subspace Minutes." None of that means anything for gift cards and digital subscriptions, because there's nothing to deliver and nothing to ship.
 
-![Delivery in 11 minutes on a gift-card screen]<img src="screenshots/delivery-in-11-min.png" width="200" alt="Delivery in 11 minutes on a gift-card screen">
+<img src="screenshots/delivery-in-11-min.png" width="200" alt="Delivery in 11 minutes on a gift-card screen">
 
 Once you see it, you can't unsee it, and most of the smaller problems below are really just this same thing leaking through in different places. So I'm not treating them as five unrelated bugs. They're five symptoms of one cause: a templated build that was never re-fitted to what Subspace actually sells. That matters more for a money app than almost anywhere else, because the product is asking me to load real cash into a wallet while showing me copy that doesn't add up.
 
