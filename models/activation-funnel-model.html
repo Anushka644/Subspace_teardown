@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Subspace · Activation Funnel Model</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0B0D12; --panel:#12151D; --panel-2:#161A24; --border:#1E232E;
+    --hi:#E8EAED; --mid:#8B93A1; --dim:#5A6273;
+    --indigo:#7B6CF6; --indigo-deep:#5B4BD6; --teal:#2FE0C0; --danger:#FF6B6B;
+    --muted-bar:#333B49;
+    --disp:'Bricolage Grotesque',sans-serif; --body:'Hanken Grotesk',sans-serif; --mono:'JetBrains Mono',monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg); color:var(--hi); font-family:var(--body);
+    line-height:1.5; padding:48px 28px 96px;
+    background-image:radial-gradient(900px 500px at 78% -10%, rgba(123,108,246,.10), transparent 60%),
+                     radial-gradient(700px 460px at 8% 8%, rgba(47,224,192,.05), transparent 55%);
+  }
+  .wrap{max-width:1080px;margin:0 auto}
+
+  /* header */
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--teal);margin-bottom:14px}
+  h1{font-family:var(--disp);font-weight:800;font-size:clamp(30px,5vw,48px);line-height:1.02;letter-spacing:-.02em}
+  h1 .accent{color:var(--indigo)}
+  .lede{color:var(--mid);font-size:16px;max-width:660px;margin-top:18px}
+  .lede b{color:var(--hi);font-weight:600}
+
+  .disclaimer{
+    margin-top:24px;border:1px solid var(--border);border-left:2px solid var(--teal);
+    background:linear-gradient(90deg,rgba(47,224,192,.06),transparent);
+    padding:14px 18px;border-radius:8px;font-size:13.5px;color:var(--mid);max-width:760px;
+  }
+  .disclaimer b{color:var(--teal);font-weight:600}
+
+  /* headline result */
+  .result{
+    display:flex;flex-wrap:wrap;align-items:flex-end;gap:36px;
+    margin:40px 0 8px;padding:28px 30px;border-radius:14px;
+    background:linear-gradient(135deg,var(--panel-2),var(--panel));
+    border:1px solid var(--border);
+  }
+  .result .block{display:flex;flex-direction:column;gap:6px}
+  .result .label{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+  .result .big{font-family:var(--mono);font-weight:700;font-size:clamp(28px,4.4vw,42px);line-height:1}
+  .result .big.cur{color:var(--mid)}
+  .result .big.prop{color:var(--teal)}
+  .result .mult{
+    margin-left:auto;text-align:right;
+  }
+  .result .mult .num{font-family:var(--disp);font-weight:800;font-size:clamp(40px,7vw,72px);line-height:.9;color:var(--indigo)}
+  .result .mult .cap{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-top:8px}
+  .result .gained{font-family:var(--mono);font-size:13px;color:var(--hi)}
+  .result .gained b{color:var(--teal)}
+
+  /* cohort control */
+  .cohort{display:flex;align-items:center;gap:14px;margin:28px 0 8px}
+  .cohort label{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--mid)}
+  .cohort input{
+    width:130px;background:var(--panel);border:1px solid var(--border);color:var(--hi);
+    font-family:var(--mono);font-size:15px;padding:8px 12px;border-radius:7px;
+  }
+  .cohort input:focus{outline:none;border-color:var(--indigo)}
+  .cohort .hint{font-size:12.5px;color:var(--dim)}
+
+  /* funnel */
+  .funnel{margin-top:26px;border:1px solid var(--border);border-radius:14px;overflow:hidden;background:var(--panel)}
+  .stage{padding:18px 22px;border-bottom:1px solid var(--border);position:relative}
+  .stage:last-child{border-bottom:none}
+  .stage.leverage{background:linear-gradient(90deg,rgba(123,108,246,.05),transparent 70%)}
+  .stage-top{display:flex;align-items:baseline;justify-content:space-between;gap:14px;margin-bottom:12px;flex-wrap:wrap}
+  .stage-name{font-family:var(--disp);font-weight:600;font-size:16px}
+  .stage-tag{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--indigo);border:1px solid rgba(123,108,246,.4);padding:3px 8px;border-radius:20px;white-space:nowrap}
+  .stage-tag.flat{color:var(--dim);border-color:var(--border)}
+
+  .bars{display:flex;flex-direction:column;gap:9px}
+  .bar-row{display:grid;grid-template-columns:64px 1fr 132px;align-items:center;gap:14px}
+  .bar-row .who{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+  .track{height:22px;background:#0E1118;border-radius:6px;overflow:hidden;position:relative}
+  .fill{height:100%;border-radius:6px;transition:width .45s cubic-bezier(.4,0,.2,1);width:0}
+  .fill.cur{background:linear-gradient(90deg,#2C3445,var(--muted-bar))}
+  .fill.prop{background:linear-gradient(90deg,var(--indigo-deep),var(--indigo))}
+  .bar-row .figures{font-family:var(--mono);font-size:12.5px;text-align:right;white-space:nowrap}
+  .bar-row .figures .count{color:var(--hi)}
+  .bar-row.cur .figures .count{color:var(--mid)}
+  .bar-row .figures .pct{color:var(--dim)}
+
+  /* sliders */
+  .controls{margin-top:14px;display:flex;flex-wrap:wrap;gap:20px}
+  .ctrl{flex:1;min-width:200px}
+  .ctrl .ctrl-label{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--mid);display:flex;justify-content:space-between;margin-bottom:7px}
+  .ctrl .ctrl-label .val{color:var(--hi)}
+  .ctrl.cur .ctrl-label .val{color:var(--mid)}
+  .ctrl.prop .ctrl-label .val{color:var(--teal)}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;border-radius:4px;background:var(--border);outline:none;cursor:pointer}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:16px;height:16px;border-radius:50%;background:var(--hi);border:3px solid var(--bg);box-shadow:0 0 0 1px var(--border)}
+  .ctrl.cur input[type=range]::-webkit-slider-thumb{background:var(--mid)}
+  .ctrl.prop input[type=range]::-webkit-slider-thumb{background:var(--teal)}
+  input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--hi);border:3px solid var(--bg);cursor:pointer}
+  .single-note{font-family:var(--mono);font-size:11px;color:var(--dim);margin-top:4px}
+
+  /* footer note */
+  .foot{margin-top:30px;display:flex;gap:24px;flex-wrap:wrap;align-items:center}
+  .legend{display:flex;gap:18px;font-family:var(--mono);font-size:11.5px;color:var(--mid)}
+  .legend span{display:flex;align-items:center;gap:7px}
+  .legend i{width:14px;height:8px;border-radius:3px;display:inline-block}
+  .legend i.cur{background:var(--muted-bar)}
+  .legend i.prop{background:var(--indigo)}
+  .reset{margin-left:auto;background:none;border:1px solid var(--border);color:var(--mid);font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:9px 16px;border-radius:7px;cursor:pointer;transition:.2s}
+  .reset:hover{border-color:var(--indigo);color:var(--hi)}
+  .method{margin-top:34px;font-size:13px;color:var(--dim);max-width:820px;border-top:1px solid var(--border);padding-top:20px}
+  .method b{color:var(--mid);font-weight:600}
+  .method code{font-family:var(--mono);font-size:12px;color:var(--teal);background:var(--panel);padding:1px 6px;border-radius:4px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow">Subspace · Internal Analysis</div>
+  <h1>Where the <span class="accent">activation funnel</span> leaks<br>— and what three fixes recover.</h1>
+  <p class="lede">A new user opens the app, browses Explore, hits the login wall, and (if all goes well) loads money. This models the survivors at each step. <b>The three highlighted stages are the only ones my three proposed fixes touch</b> — every other rate is held identical across both scenarios, so the gap at the bottom is attributable to the fixes and nothing else.</p>
+
+  <div class="disclaimer">
+    <b>These inputs are illustrative defaults, not measured rates.</b> I don't have Subspace's funnel data — the point of this tool is the <i>shape</i> of the loss and which stages carry it, not any specific figure. Drag every slider to whatever your real numbers are; the model recomputes live.
+  </div>
+
+  <div class="result">
+    <div class="block">
+      <span class="label">Activated — current</span>
+      <span class="big cur" id="r-cur">—</span>
+    </div>
+    <div class="block">
+      <span class="label">Activated — after fixes</span>
+      <span class="big prop" id="r-prop">—</span>
+    </div>
+    <div class="mult">
+      <div class="num" id="r-mult">—</div>
+      <div class="gained" id="r-gained"></div>
+      <div class="cap">activated users per cohort</div>
+    </div>
+  </div>
+
+  <div class="cohort">
+    <label for="cohort">Starting cohort</label>
+    <input type="number" id="cohort" value="1000" min="1" step="100">
+    <span class="hint">app opens — set this to any window you like (daily, weekly, per-campaign)</span>
+  </div>
+
+  <div class="funnel" id="funnel"></div>
+
+  <div class="foot">
+    <div class="legend">
+      <span><i class="cur"></i> Current</span>
+      <span><i class="prop"></i> After fixes</span>
+    </div>
+    <button class="reset" id="reset">Reset to defaults</button>
+  </div>
+
+  <p class="method">
+    <b>How to read it.</b> Each stage multiplies the survivors from the stage above by its conversion rate. Stages tagged with a feedback number (<code>F1</code>, <code>F2</code>, <code>F4</code>) are the three I argue are broken; only those move between Current and After-fixes. The flat-tagged stages use a single shared rate applied to both scenarios, so they never inflate the delta. Map: <code>F1</code> Explore surfaces the commodity layer and hides the differentiated hook (GTM/activation) · <code>F2</code> OTP delivery fails at the login wall (Features) · <code>F4</code> trust collapses at the add-money moment (Trust/UX). Replace the defaults with real data and the size of the prize re-derives itself.
+  </p>
+
+</div>
+
+<script>
+// Funnel definition. rateCur / rateProp in %. leverage stages differ; flat stages share one rate.
+const STAGES = [
+  { id:'open',   name:'App open',                       who:'enters', flat:true,  rate:100, fixed:true, tag:null },
+  { id:'browse', name:'Reaches Explore (public)',       who:'browse', flat:true,  rate:92,  tag:'flat' },
+  { id:'intent', name:'Compelled to use a gated feature',who:'intent', flat:false, cur:35, prop:55, tag:'F1 · activation' },
+  { id:'otpreq', name:'Requests OTP at login wall',      who:'OTP req',flat:true,  rate:90,  tag:'flat' },
+  { id:'otpok',  name:'OTP delivered → login succeeds',  who:'logged', flat:false, cur:70, prop:97, tag:'F2 · features' },
+  { id:'addseen',name:'Reaches Add Money',               who:'reach',  flat:true,  rate:60,  tag:'flat' },
+  { id:'done',   name:'Completes Add Money — activated', who:'active', flat:false, cur:30, prop:50, tag:'F4 · trust' },
+];
+
+const funnelEl = document.getElementById('funnel');
+const state = JSON.parse(JSON.stringify(STAGES));
+
+function buildUI(){
+  funnelEl.innerHTML = '';
+  state.forEach((s, i) => {
+    const stage = document.createElement('div');
+    stage.className = 'stage' + (s.flat ? '' : ' leverage');
+    let tagHtml = s.tag ? `<span class="stage-tag ${s.flat?'flat':''}">${s.tag}</span>` : '';
+    stage.innerHTML = `
+      <div class="stage-top">
+        <span class="stage-name">${i+1 < 10 ? i : i}. ${s.name}</span>
+        ${tagHtml}
+      </div>
+      <div class="bars">
+        <div class="bar-row prop">
+          <span class="who">after</span>
+          <div class="track"><div class="fill prop" data-fill="prop-${s.id}"></div></div>
+          <span class="figures"><span class="count" data-c="prop-${s.id}">—</span> <span class="pct" data-p="prop-${s.id}"></span></span>
+        </div>
+        <div class="bar-row cur">
+          <span class="who">current</span>
+          <div class="track"><div class="fill cur" data-fill="cur-${s.id}"></div></div>
+          <span class="figures"><span class="count" data-c="cur-${s.id}">—</span> <span class="pct" data-p="cur-${s.id}"></span></span>
+        </div>
+      </div>
+    `;
+    if(!s.fixed){
+      const controls = document.createElement('div');
+      controls.className = 'controls';
+      if(s.flat){
+        controls.innerHTML = `
+          <div class="ctrl">
+            <div class="ctrl-label"><span>Conversion (both scenarios)</span><span class="val" data-v="rate-${s.id}">${s.rate}%</span></div>
+            <input type="range" min="0" max="100" value="${s.rate}" data-r="rate-${s.id}">
+            <div class="single-note">held constant — does not affect the delta</div>
+          </div>`;
+      } else {
+        controls.innerHTML = `
+          <div class="ctrl cur">
+            <div class="ctrl-label"><span>Current</span><span class="val" data-v="cur-${s.id}">${s.cur}%</span></div>
+            <input type="range" min="0" max="100" value="${s.cur}" data-r="cur-${s.id}">
+          </div>
+          <div class="ctrl prop">
+            <div class="ctrl-label"><span>After fix</span><span class="val" data-v="prop-${s.id}">${s.prop}%</span></div>
+            <input type="range" min="0" max="100" value="${s.prop}" data-r="prop-${s.id}">
+          </div>`;
+      }
+      stage.appendChild(controls);
+    }
+    funnelEl.appendChild(stage);
+  });
+
+  funnelEl.querySelectorAll('input[type=range]').forEach(inp=>{
+    inp.addEventListener('input', e=>{
+      const key = e.target.dataset.r;
+      const [scope, id] = key.split('-');
+      const s = state.find(x=>x.id===id);
+      const v = +e.target.value;
+      if(scope==='rate'){ s.rate = v; }
+      else if(scope==='cur'){ s.cur = v; if(s.prop < v){ s.prop = v; } }
+      else { s.prop = v; }
+      // keep prop >= cur visually sensible but allow free movement except prop floor
+      compute();
+    });
+  });
+}
+
+function compute(){
+  const cohort = Math.max(0, +document.getElementById('cohort').value || 0);
+  let cur = cohort, prop = cohort;
+  state.forEach((s)=>{
+    if(s.fixed){ /* open: 100% */ }
+    else if(s.flat){ cur = cur * s.rate/100; prop = prop * s.rate/100; }
+    else { cur = cur * s.cur/100; prop = prop * s.prop/100; }
+
+    const maxBar = cohort || 1;
+    setFill('cur-'+s.id, cur/maxBar*100, Math.round(cur));
+    setFill('prop-'+s.id, prop/maxBar*100, Math.round(prop));
+
+    // stage conversion labels
+    setPct('cur-'+s.id, s.fixed?100:(s.flat?s.rate:s.cur));
+    setPct('prop-'+s.id, s.fixed?100:(s.flat?s.rate:s.prop));
+
+    // slider value labels
+    if(!s.fixed){
+      if(s.flat) setVal('rate-'+s.id, s.rate);
+      else { setVal('cur-'+s.id, s.cur); setVal('prop-'+s.id, s.prop); }
+    }
+  });
+
+  const curF = Math.round(cur), propF = Math.round(prop);
+  document.getElementById('r-cur').textContent = curF.toLocaleString();
+  document.getElementById('r-prop').textContent = propF.toLocaleString();
+  const mult = curF>0 ? (propF/curF) : 0;
+  document.getElementById('r-mult').textContent = (mult>0? mult.toFixed(1)+'×' : '—');
+  const gained = propF - curF;
+  document.getElementById('r-gained').innerHTML = gained>=0
+    ? `<b>+${gained.toLocaleString()}</b> recovered`
+    : `${gained.toLocaleString()}`;
+}
+
+function setFill(key, pct, count){
+  const f = funnelEl.querySelector(`[data-fill="${key}"]`);
+  if(f) f.style.width = Math.max(0, Math.min(100, pct)) + '%';
+  const c = funnelEl.querySelector(`[data-c="${key}"]`);
+  if(c) c.textContent = count.toLocaleString();
+}
+function setPct(key, val){
+  const p = funnelEl.querySelector(`[data-p="${key}"]`);
+  if(p) p.textContent = '· ' + Math.round(val) + '%';
+}
+function setVal(key, val){
+  const v = funnelEl.querySelector(`[data-v="${key}"]`);
+  if(v) v.textContent = val + '%';
+}
+
+document.getElementById('cohort').addEventListener('input', compute);
+document.getElementById('reset').addEventListener('click', ()=>{
+  STAGES.forEach((src,i)=>{ Object.assign(state[i], JSON.parse(JSON.stringify(src))); });
+  document.getElementById('cohort').value = 1000;
+  buildUI(); compute();
+});
+
+buildUI();
+// initial render with a brief delay so the bars animate in from zero
+requestAnimationFrame(()=>{ requestAnimationFrame(compute); });
+</script>
+</body>
+</html>
